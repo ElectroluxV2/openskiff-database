@@ -5,13 +5,13 @@ values (1, 'GKŻ', 'Gdański Klub Żeglarski'),
        (3, 'MKŻ Arka', 'Miejski Klub Żeglarski Arka Gdynia');
 
 truncate table sailors cascade;
-insert into sailors (sailor_id, given_name, family_name, birth_date)
-values (1, 'Maksymilian', 'Markow', '2003-01-01'),
-       (2, 'Michał', 'Sitko', '2004-01-01'),
-       (3, 'Wojtek', 'Konstanty', '2002-01-01'),
-       (4, 'Magda', 'Winiarska', '2006-01-01'),
-       (5, 'Witold', 'Pytliński', '2007-01-01'),
-       (6, 'Maciej', 'Pytliński', '2005-01-01');
+insert into sailors (sailor_id, sex, given_name, family_name, birth_date)
+values (1, 'M', 'Maksymilian', 'Markow', '2003-01-01'),
+       (2, 'M', 'Michał', 'Sitko', '2004-01-01'),
+       (3, 'M', 'Wojtek', 'Konstanty', '2002-01-01'),
+       (4, 'F', 'Magda', 'Winiarska', '2006-01-01'),
+       (5, 'M', 'Witold', 'Pytliński', '2007-01-01'),
+       (6, 'M', 'Maciej', 'Pytliński', '2005-01-01');
 
 truncate table places cascade;
 insert into places (place_id, name, location)
