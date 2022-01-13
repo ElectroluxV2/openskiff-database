@@ -1,10 +1,10 @@
 drop table if exists sailors cascade;
 create table sailors (
     sailor_id bigserial unique primary key,
-    given_name varchar(128) not null,
-    family_name varchar(128) not null,
     sex char check (sex IN ('F', 'M')) not null,
-    birth_date date not null
+    birth_date date not null,
+    given_name varchar(128) not null,
+    family_name varchar(128) not null
 );
 
 drop table if exists clubs cascade;
@@ -17,15 +17,17 @@ create table clubs (
 drop table if exists places cascade;
 create table places (
     place_id bigserial unique primary key,
-    name varchar(512) not null,
-    location point
+    location point,
+    name varchar(512) not null
 );
 
 drop table if exists regattas cascade;
 create table regattas (
     regatta_id bigserial unique primary key,
-    name varchar(512) not null,
-    place_id bigserial references places(place_id) not null
+    place_id bigserial references places(place_id) not null,
+    begin_date date not null,
+    end_date date not null,
+    name varchar(512) not null
 );
 
 drop table if exists sailing_numbers_associated_to_sailors cascade;
@@ -46,9 +48,40 @@ create table starting_list (
     unique (regatta_id, sailor_id, club_id)
 );
 
+drop procedure if exists get_staring_list_for_regatta;
+create procedure get_staring_list_for_regatta(target_regatta_id bigint)
+language sql
+as $$
+select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_agg(n.sailing_number, ', ') AS sailing_numbers from starting_list as sl
+    left join regattas r on sl.regatta_id = r.regatta_id
+    left join sailors s on s.sailor_id = sl.sailor_id
+    left join clubs c on sl.club_id = c.club_id
+    left join sailing_numbers_associated_to_sailors n on s.sailor_id = n.sailor_id
+where sl.regatta_id = target_regatta_id
+group by s.sailor_id, r.name, s.family_name, s.given_name, c.short_name;
+$$;
+
+
+
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+
+call get_staring_list_for_regatta(1);
+
+select sailing_number from sailing_numbers_associated_to_sailors where sailor_id = 6 and regatta_id = 1;
+
 select s.sailor_id, r.name, s.family_name, s.given_name, n.sailing_number, c.short_name from starting_list as sl
     left join regattas r on sl.regatta_id = r.regatta_id
     left join sailors s on s.sailor_id = sl.sailor_id
     left join clubs c on sl.club_id = c.club_id
     left join sailing_numbers_associated_to_sailors n on s.sailor_id = n.sailor_id
 where sl.regatta_id = 1;
+
+select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_agg(n.sailing_number, ', ') AS sailing_numbers from starting_list as sl
+    left join regattas r on sl.regatta_id = r.regatta_id
+    left join sailors s on s.sailor_id = sl.sailor_id
+    left join clubs c on sl.club_id = c.club_id
+    left join sailing_numbers_associated_to_sailors n on s.sailor_id = n.sailor_id
+where sl.regatta_id = 1
+group by s.sailor_id, r.name, s.family_name, s.given_name, c.short_name;
