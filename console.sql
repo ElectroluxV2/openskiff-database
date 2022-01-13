@@ -52,7 +52,7 @@ drop procedure if exists get_staring_list_for_regatta;
 create procedure get_staring_list_for_regatta(target_regatta_id bigint)
 language sql
 as $$
-select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_agg(n.sailing_number, ', ') AS sailing_numbers from starting_list as sl
+select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_agg(n.sailing_number, ',') AS sailing_numbers from starting_list as sl
     left join regattas r on sl.regatta_id = r.regatta_id
     left join sailors s on s.sailor_id = sl.sailor_id
     left join clubs c on sl.club_id = c.club_id
@@ -60,8 +60,6 @@ select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_ag
 where sl.regatta_id = target_regatta_id
 group by s.sailor_id, r.name, s.family_name, s.given_name, c.short_name;
 $$;
-
-
 
 -----------------------------------------------
 -----------------------------------------------
