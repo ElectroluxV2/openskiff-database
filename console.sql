@@ -48,6 +48,24 @@ create table starting_list (
     unique (regatta_id, sailor_id, club_id)
 );
 
+drop table if exists year_categories cascade;
+create table year_categories (
+    category varchar(16) not null,
+    younger_than int not null,
+
+    primary key (category),
+    unique (category)
+);
+
+drop table if exists results_abbreviations cascade;
+create table results_abbreviations (
+    short_name varchar(5) not null,
+    full_name varchar(255) not null,
+
+    primary key (short_name),
+    unique(short_name)
+);
+
 drop procedure if exists get_staring_list_for_regatta;
 create procedure get_staring_list_for_regatta(target_regatta_id bigint)
 language sql

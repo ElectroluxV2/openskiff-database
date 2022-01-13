@@ -95,3 +95,19 @@ values (1, 1, 2),
        (1, 19, 2),
        (1, 20, 7),
        (1, 21, 8);
+
+insert into year_categories (category, younger_than)
+values ('Open', 150),
+       ('U15', 15),
+       ('U13', 13),
+       ('U9', 9);
+
+insert into results_abbreviations (short_name, full_name)
+values ('DNE', 'Disqualification Not Excludable under rule 90.3.'),
+       ('DNF', 'Did not finish.'),
+       ('DNS', 'Did not start.'),
+       ('DSQ', 'Disqualified.'),
+       ('NSC', 'Did not sail course.'),
+       ('OCS', 'Over the line at the start.'),
+       ('RET', 'Retired.'),
+       ('RDG', 'Redress given.')
