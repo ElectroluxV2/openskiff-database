@@ -108,7 +108,7 @@ select s.sailor_id, r.name, s.family_name, s.given_name, n.sailing_number, c.sho
     left join sailing_numbers_associated_to_sailors n on s.sailor_id = n.sailor_id
 where sl.regatta_id = 1;
 
-select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_agg(n.sailing_number, ', ') AS sailing_numbers from starting_list as sl
+select s.sailor_id, r.name, s.family_name, s.given_name, c.short_name, string_agg(n.sailing_number, ',') AS sailing_numbers from starting_list as sl
     left join regattas r on sl.regatta_id = r.regatta_id
     left join sailors s on s.sailor_id = sl.sailor_id
     left join clubs c on sl.club_id = c.club_id
