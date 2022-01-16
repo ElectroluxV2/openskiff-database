@@ -241,7 +241,8 @@ values (1, 5, 1, '9425'),
        (1, 5, 17, '9476'),
        (1, 5, 18, '9850'),
        (1, 5, 19, '11869'),
-       (1, 5, 20, '7547');
+       (1, 5, 20, '7547'),
+       (1, 5, 21, '9182');
 
 insert into races_finish_line_list (regatta_id, race_number, place, sail_number)
 values (1, 6, 1, '9425'),
