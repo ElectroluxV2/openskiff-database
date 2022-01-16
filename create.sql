@@ -154,16 +154,6 @@ begin
     return sailor_count;
 end; $$;
 
-drop view if exists step_one_results;
-create view step_one_results as select * from (select sl.regatta_id, rg.exclusions, sl.sailor_id, snats.sail_number, r.race_number, fl.place, p.abbreviation, get_points(fl.place, p.abbreviation, get_total_sailors(sl.regatta_id)) as step_one_points
-from starting_list sl
-    left join sailing_numbers_associated_to_sailors snats on sl.regatta_id = snats.regatta_id and sl.sailor_id = snats.sailor_id
-    full outer join races r on sl.regatta_id = r.regatta_id
-    left join races_finish_line_list fl on r.regatta_id = fl.regatta_id and r.race_number = fl.race_number and fl.sail_number = snats.sail_number
-    left join penalties p on r.regatta_id = p.regatta_id and r.race_number = p.race_number and snats.sail_number = p.sail_number
-    left join regattas rg on r.regatta_id = rg.regatta_id) as tmp
-where tmp.step_one_points is not null;
-
 create or replace function get_total_sailors(target_regatta_id bigint) returns bigint language plpgsql as $$
 declare
     sailor_count bigint;
@@ -173,16 +163,11 @@ begin
     return sailor_count;
 end; $$;
 
-drop view if exists step_two_results;
-create view step_two_results as select regatta_id, exclusions, sailor_id, sail_number, race_number, place, abbreviation, step_one_points,
-       rank() over (partition by race_number, regatta_id order by step_one_points) as step_two_points
-from step_one_results;
-
 drop function if exists get_n_of_greatest_points;
 create function get_n_of_greatest_points(target_regatta_id bigint, target_sailor_id bigint, target_regatta_exclusions bigint)
 returns table (points bigint, race_number bigint) language plpgsql as $$
 begin
-    return query select r.step_two_points, r.race_number from step_two_results r where r.regatta_id = target_regatta_id and r.sailor_id = target_sailor_id order by r.step_two_points desc limit target_regatta_exclusions;
+    return query select r.points, r.race_number from pre_results r where r.regatta_id = target_regatta_id and r.sailor_id = target_sailor_id order by r.points desc limit target_regatta_exclusions;
 end; $$;
 
 drop function if exists get_sum_of_greatest_points;
@@ -194,25 +179,31 @@ begin
     return sum_of_greatest;
 end; $$;
 
-drop view if exists step_three_results;
-create view step_three_results as select
-    regatta_id,
-    sailor_id,
-    sail_number,
-    race_number,
-    place,
-    abbreviation,
-    step_one_points,
-    step_two_points,
-    (min(step_two_points) over (partition by sailor_id, regatta_id)) as min_point,
-    (sum(step_two_points) over (partition by sailor_id, regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, exclusions)) as step_three_points
-from step_two_results;
+drop view if exists pre_results cascade;
+create view pre_results as select
+    regatta_id, exclusions, sailor_id, sail_number, race_number, place, abbreviation,
+    rank() over (partition by race_number, regatta_id order by step_one_points) as points
+    from (select
+        sl.regatta_id,
+        rg.exclusions,
+        sl.sailor_id,
+        snats.sail_number,
+        r.race_number,
+        fl.place,
+        p.abbreviation,
+        get_points(fl.place, p.abbreviation, get_total_sailors(sl.regatta_id)) as step_one_points
+    from starting_list sl
+    left join sailing_numbers_associated_to_sailors snats on sl.regatta_id = snats.regatta_id and sl.sailor_id = snats.sailor_id
+    full outer join races r on sl.regatta_id = r.regatta_id
+    left join races_finish_line_list fl on r.regatta_id = fl.regatta_id and r.race_number = fl.race_number and fl.sail_number = snats.sail_number
+    left join penalties p on r.regatta_id = p.regatta_id and r.race_number = p.race_number and snats.sail_number = p.sail_number
+    left join regattas rg on r.regatta_id = rg.regatta_id
+) as tmp
+where tmp.step_one_points is not null;
 
--- select * from get_n_of_greatest_points(1, 8, 2);
--- select get_sum_of_greatest_points(1, 8, 2);
--- select sum(r.points) from results r where r.sailor_id = 1 and r.regatta_id = 1;
---
-select * from step_three_results where sailor_id = 5;
-
-select step_two_points from step_two_results where sailor_id = 5 order by step_two_points limit 1;
--- select * from results where sailor_id = 1;
+drop view if exists results cascade;
+create view results as select
+    *,
+    (min(points) over (partition by sailor_id, regatta_id)) as min_point,
+    (sum(points) over (partition by sailor_id, regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, exclusions)) as total_points
+from pre_results order by total_points desc , min_point;
