@@ -195,8 +195,17 @@ begin
 end; $$;
 
 drop view if exists step_three_results;
-create view step_three_results as select regatta_id, sailor_id, sail_number, race_number, place, abbreviation, step_one_points, step_two_points,
-   ((select sum(r.step_two_points) from step_two_results r where r.sailor_id = step_two_results.sailor_id and r.regatta_id = step_two_results.regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, exclusions)) as step_three_points
+create view step_three_results as select
+    regatta_id,
+    sailor_id,
+    sail_number,
+    race_number,
+    place,
+    abbreviation,
+    step_one_points,
+    step_two_points,
+    (min(step_two_points) over (partition by sailor_id, regatta_id)) as min_point,
+    (sum(step_two_points) over (partition by sailor_id, regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, exclusions)) as step_three_points
 from step_two_results;
 
 -- select * from get_n_of_greatest_points(1, 8, 2);
@@ -204,4 +213,6 @@ from step_two_results;
 -- select sum(r.points) from results r where r.sailor_id = 1 and r.regatta_id = 1;
 --
 select * from step_three_results where sailor_id = 5;
+
+select step_two_points from step_two_results where sailor_id = 5 order by step_two_points limit 1;
 -- select * from results where sailor_id = 1;
