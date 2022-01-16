@@ -116,10 +116,11 @@ create table penalties (
     abbreviation varchar(5) references results_abbreviations(short_name),
 
     foreign key (regatta_id, race_number) references races(regatta_id, race_number),
+    primary key (regatta_id, race_number, sail_number),
     unique (regatta_id, race_number, sail_number)
 );
 
-drop table if exists get_points;
+drop function if exists get_points;
 create function get_points(place bigint, abbreviation varchar(5), total_sailors bigint) returns bigint language plpgsql as $$
 begin
     if abbreviation is null then
