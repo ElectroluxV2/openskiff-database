@@ -173,7 +173,6 @@ end; $$;
 
 drop view if exists results;
 create view results as select regatta_id, sailor_id, sailing_number, race_number, place, abbreviation, pre_score,
-       get_score(rank() over (partition by race_number order by pre_score), abbreviation, get_total_sailors(regatta_id)) as points
+       rank() over (partition by race_number, regatta_id order by pre_score) as points
 from pre_results;
-
 
