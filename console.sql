@@ -36,3 +36,12 @@ select place, race_number from races_finish_line_list where regatta_id = 1 and s
 select * from crosstab(
    'select sail_number, race_number, place from races_finish_line_list where regatta_id = 1 and sail_number = ''9922'''
 ) as cr(s1 text, s2 text, s3 text);
+
+select * from crosstab(
+    'select sail_number, race_number, place
+     from races_finish_line_list
+     order by 1, 2'
+    ) as ct(sail_number varchar(16), race_number1 bigint, race_number2 bigint, race_number3 bigint, race_number4 bigint, race_number5 bigint, race_number6 bigint);
+
+
+select xtab(results, 'row', 'cat', 'expr', bigint);

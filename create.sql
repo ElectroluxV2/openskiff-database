@@ -34,7 +34,7 @@ drop table if exists regattas cascade;
 create table regattas (
     regatta_id bigserial,
     place_id bigserial references places(place_id) not null,
-    exclusions int not null,
+    exclusions bigint not null,
     begin_date date not null,
     end_date date not null,
     name varchar(512) not null,
@@ -66,7 +66,7 @@ create table starting_list (
 drop table if exists year_categories cascade;
 create table year_categories (
     category varchar(16) not null,
-    younger_than int not null,
+    younger_than bigint not null,
 
     primary key (category),
     unique (category)
@@ -84,7 +84,7 @@ create table results_abbreviations (
 drop table if exists races cascade;
 create table races (
     regatta_id bigserial references regattas(regatta_id) not null,
-    race_number int not null,
+    race_number bigint not null,
 
     primary key (regatta_id, race_number),
     unique (regatta_id, race_number)
@@ -98,9 +98,9 @@ create table races (
 drop table if exists races_finish_line_list cascade;
 create table races_finish_line_list (
     regatta_id bigserial not null,
-    race_number int not null,
+    race_number bigint not null,
     sail_number varchar(16) not null,
-    place int not null,
+    place bigint not null,
 
     foreign key (regatta_id, race_number) references races(regatta_id, race_number),
     primary key (regatta_id, race_number, sail_number),
@@ -111,7 +111,7 @@ create table races_finish_line_list (
 drop table if exists penalties cascade;
 create table penalties (
     regatta_id bigserial,
-    race_number int,
+    race_number bigint,
     sail_number varchar(16),
     abbreviation varchar(5) references results_abbreviations(short_name),
 
@@ -120,7 +120,7 @@ create table penalties (
 );
 
 
-create or replace function get_score(place bigint, abbreviation varchar(5), total_sailors int) returns int language plpgsql as $$
+create or replace function get_score(place bigint, abbreviation varchar(5), total_sailors bigint) returns bigint language plpgsql as $$
 begin
     if abbreviation is null then
         return place;
@@ -144,9 +144,10 @@ begin
     return abbr;
 end; $$;
 
-create or replace function get_total_sailors(target_regatta_id bigint) returns int language plpgsql as $$
+drop function if exists get_total_sailors;
+create function get_total_sailors(target_regatta_id bigint) returns bigint language plpgsql as $$
 declare
-    sailor_count int;
+    sailor_count bigint;
 begin
     select count(sailor_id) into sailor_count from starting_list where regatta_id = target_regatta_id;
 
@@ -162,9 +163,9 @@ from starting_list sl
     left join penalties p on r.regatta_id = p.regatta_id and r.race_number = p.race_number and snats.sailing_number = p.sail_number) as tmp
 where tmp.pre_score is not null;
 
-create or replace function get_total_sailors(target_regatta_id bigint) returns int language plpgsql as $$
+create or replace function get_total_sailors(target_regatta_id bigint) returns bigint language plpgsql as $$
 declare
-    sailor_count int;
+    sailor_count bigint;
 begin
     select count(sailor_id) into sailor_count from starting_list where regatta_id = target_regatta_id;
 
@@ -176,3 +177,30 @@ create view results as select regatta_id, sailor_id, sailing_number, race_number
        rank() over (partition by race_number, regatta_id order by pre_score) as points
 from pre_results;
 
+drop function if exists get_n_of_greatest_points;
+create function get_n_of_greatest_points(target_regatta_id bigint, target_sailor_id bigint, target_regatta_exclusions bigint)
+returns table (points bigint, race_number bigint) language plpgsql as $$
+begin
+    return query select r.points, r.race_number from results r where r.regatta_id = target_regatta_id and r.sailor_id = target_sailor_id order by r.points desc limit target_regatta_exclusions;
+end; $$;
+
+drop function if exists get_sum_of_greatest_points;
+create function get_sum_of_greatest_points(target_regatta_id bigint, target_sailor_id bigint, target_regatta_exclusions bigint) returns bigint language plpgsql as $$
+declare
+    sum_of_greatest bigint;
+begin
+    select sum(points) into sum_of_greatest from get_n_of_greatest_points(target_regatta_id, target_sailor_id, target_regatta_exclusions);
+    return sum_of_greatest;
+end; $$;
+
+drop view if exists post_results;
+create view post_results as select regatta_id, sailor_id, sailing_number, race_number, place, abbreviation, pre_score, points,
+   ((select sum(r.points) from results r where r.sailor_id = results.sailor_id and r.regatta_id = results.regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, 1)) as post_points
+from results;
+
+-- select * from get_n_of_greatest_points(1, 8, 2);
+-- select get_sum_of_greatest_points(1, 8, 2);
+-- select sum(r.points) from results r where r.sailor_id = 1 and r.regatta_id = 1;
+--
+-- select * from post_results where sailor_id = 5;
+-- select * from results where sailor_id = 1;
