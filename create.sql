@@ -119,7 +119,7 @@ create table penalties (
 );
 
 
-create or replace function get_pre_score(place int, abbreviation varchar(5), total_sailors int) returns int language plpgsql as $$
+create or replace function get_score(place bigint, abbreviation varchar(5), total_sailors int) returns int language plpgsql as $$
 begin
     if abbreviation is null then
         return place;
@@ -152,31 +152,8 @@ begin
     return sailor_count;
 end; $$;
 
-
-select aaaaaa(2);
-select get_total_sailors(1);
-select get_abbreviation_for_sailor(21, 1, 1);
-
 drop view if exists pre_results;
-create view pre_results as
-    select sl.regatta_id,
-           r.race_number,
-           fl.sail_number,
-           sl.club_id,
-           get_pre_score(fl.place, get_abbreviation_for_sailor(sailor_id, sl.regatta_id, r.race_number), get_total_sailors(sl.regatta_id)) as pre_score
-    from starting_list sl
-    left join races r on sl.regatta_id = r.regatta_id
-    left join races_finish_line_list fl on r.regatta_id = fl.regatta_id and r.race_number = fl.race_number
-    group by sl.regatta_id, r.race_number, fl.sail_number, sl.club_id, get_pre_score(fl.place, get_abbreviation_for_sailor(sailor_id, sl.regatta_id, r.race_number), get_total_sailors(sl.regatta_id));
-
-
-
-select fl.race_number, n.sailor_id, fl.place from races_finish_line_list fl
-    left join sailing_numbers_associated_to_sailors n on fl.regatta_id = n.regatta_id and fl.sail_number = n.sailing_number
-    full outer join starting_list sl on sl.sailor_id = n.sailor_id;
-
-
-select * from (select sl.sailor_id, snats.sailing_number, r.race_number, fl.place, p.abbreviation, get_pre_score(fl.place, p.abbreviation, get_total_sailors(sl.regatta_id)) as pre_score
+create view pre_results as select * from (select sl.regatta_id, sl.sailor_id, snats.sailing_number, r.race_number, fl.place, p.abbreviation, get_score(fl.place, p.abbreviation, get_total_sailors(sl.regatta_id)) as pre_score
 from starting_list sl
     left join sailing_numbers_associated_to_sailors snats on sl.regatta_id = snats.regatta_id and sl.sailor_id = snats.sailor_id
     full outer join races r on sl.regatta_id = r.regatta_id
@@ -184,8 +161,18 @@ from starting_list sl
     left join penalties p on r.regatta_id = p.regatta_id and r.race_number = p.race_number and snats.sailing_number = p.sail_number) as tmp
 where tmp.pre_score is not null;
 
+create or replace function get_total_sailors(target_regatta_id bigint) returns int language plpgsql as $$
+declare
+    sailor_count int;
+begin
+    select count(sailor_id) into sailor_count from starting_list where regatta_id = target_regatta_id;
 
+    return sailor_count;
+end; $$;
 
-
+drop view if exists results;
+create view results as select regatta_id, sailor_id, sailing_number, race_number, place, abbreviation, pre_score,
+       get_score(rank() over (partition by race_number order by pre_score), abbreviation, get_total_sailors(regatta_id)) as points
+from pre_results;
 
 

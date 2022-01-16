@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="openskiff@152.70.171.108" uuid="30a6eb06-230f-4d71-b43f-fc208915bce4">
+    <data-source source="LOCAL" name="openskiff@ip.budziszm.pl" uuid="30a6eb06-230f-4d71-b43f-fc208915bce4">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://152.70.171.108:5432/openskiff</jdbc-url>
+      <jdbc-url>jdbc:postgresql://ip.budziszm.pl:5432/openskiff</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
