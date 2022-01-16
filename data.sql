@@ -45,8 +45,8 @@ values (1, '(54.517930, 18.551069)', 'Gdynia, Polska'),
        (6, '(52.436472, 21.040848)', 'Nieporęt, Polska');
 
 truncate table regattas cascade;
-insert into regattas (regatta_id, place_id, begin_date, end_date, name)
-values (1, 1, '2020-11-07', '2020-11-08', 'Finał Super Pucharu Arki');
+insert into regattas (regatta_id, place_id, exclusions, begin_date, end_date, name)
+values (1, 1, 1, '2020-11-07', '2020-11-08', 'Finał Super Pucharu Arki');
 
 truncate table sailing_numbers_associated_to_sailors cascade ;
 insert into sailing_numbers_associated_to_sailors (regatta_id, sailor_id, sailing_number)

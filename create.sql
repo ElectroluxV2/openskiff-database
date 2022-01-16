@@ -34,6 +34,7 @@ drop table if exists regattas cascade;
 create table regattas (
     regatta_id bigserial,
     place_id bigserial references places(place_id) not null,
+    exclusions int not null,
     begin_date date not null,
     end_date date not null,
     name varchar(512) not null,
