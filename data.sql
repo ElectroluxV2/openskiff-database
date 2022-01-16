@@ -48,7 +48,7 @@ truncate table regattas cascade;
 insert into regattas (regatta_id, place_id, begin_date, end_date, name)
 values (1, 1, '2020-11-07', '2020-11-08', 'Finał Super Pucharu Arki');
 
-truncate table sailing_numbers_associated_to_sailors;
+truncate table sailing_numbers_associated_to_sailors cascade ;
 insert into sailing_numbers_associated_to_sailors (regatta_id, sailor_id, sailing_number)
 values (1, 1, '9425'),
        (1, 2, '9922'),
@@ -60,10 +60,7 @@ values (1, 1, '9425'),
        (1, 8, '11139'),
        (1, 9, '10092'),
        (1, 10, '2'),
-       (1, 10, '3'),
-       (1, 10, '4'),
-       (1, 10, '5'),
-       (1, 10, '6'),
+       (1, 10, '22'),
        (1, 11, '10366'),
        (1, 12, '10649'),
        (1, 13, '11135'),
@@ -76,7 +73,7 @@ values (1, 1, '9425'),
        (1, 20, '9850'),
        (1, 21, '7547');
 
-truncate table starting_list;
+truncate table starting_list cascade ;
 insert into starting_list (regatta_id, sailor_id, club_id)
 values (1, 1, 2),
        (1, 2, 2),
@@ -100,12 +97,14 @@ values (1, 1, 2),
        (1, 20, 7),
        (1, 21, 8);
 
+truncate year_categories cascade;
 insert into year_categories (category, younger_than)
 values ('Open', 150),
        ('U15', 15),
        ('U13', 13),
        ('U9', 9);
 
+truncate results_abbreviations cascade;
 insert into results_abbreviations (short_name, full_name)
 values ('DNE', 'Disqualification Not Excludable under rule 90.3.'),
        ('DNF', 'Did not finish.'),
@@ -116,6 +115,7 @@ values ('DNE', 'Disqualification Not Excludable under rule 90.3.'),
        ('RET', 'Retired.'),
        ('RDG', 'Redress given.');
 
+truncate races cascade;
 insert into races (regatta_id, race_number)
 values (1, 1),
        (1, 2),
@@ -124,6 +124,15 @@ values (1, 1),
        (1, 5),
        (1, 6);
 
+truncate penalties cascade;
+insert into penalties (regatta_id, race_number, sail_number, abbreviation)
+values (1, 1, '7547', 'DNS'),
+       (1, 2, '7547', 'DNS'),
+       (1, 3, '7547', 'DNS'),
+       (1, 4, '7547', 'DNS'),
+       (1, 4, '9809', 'OCS');
+
+truncate races_finish_line_list cascade;
 insert into races_finish_line_list (regatta_id, race_number, place, sail_number)
 values (1, 1, 1, '9425'),
        (1, 1, 2, '7482'),
@@ -200,16 +209,17 @@ values (1, 4, 1, '9425'),
        (1, 4, 7, '9182'),
        (1, 4, 8, '10366'),
        (1, 4, 9, '8035'),
-       (1, 4, 10, '11139'),
-       (1, 4, 11, '10649'),
-       (1, 4, 12, '11869'),
-       (1, 4, 13, '9922'),
-       (1, 4, 14, '11135'),
-       (1, 4, 15, '9850'),
-       (1, 4, 16, '2'),
-       (1, 4, 17, '8030'),
-       (1, 4, 18, '10684'),
-       (1, 4, 19, '9476');
+       (1, 4, 10, '9809'),
+       (1, 4, 11, '11139'),
+       (1, 4, 12, '10649'),
+       (1, 4, 13, '11869'),
+       (1, 4, 14, '9922'),
+       (1, 4, 15, '11135'),
+       (1, 4, 16, '9850'),
+       (1, 4, 17, '2'),
+       (1, 4, 18, '8030'),
+       (1, 4, 19, '10684'),
+       (1, 4, 20, '9476');
 
 insert into races_finish_line_list (regatta_id, race_number, place, sail_number)
 values (1, 5, 1, '9425'),
@@ -237,7 +247,7 @@ insert into races_finish_line_list (regatta_id, race_number, place, sail_number)
 values (1, 6, 1, '9425'),
        (1, 6, 2, '7482'),
        (1, 6, 3, '9922'),
-       (1, 6, 4, '2'),
+       (1, 6, 4, '22'),
        (1, 6, 5, '9476'),
        (1, 6, 6, '8188'),
        (1, 6, 7, '10067'),
