@@ -119,8 +119,8 @@ create table penalties (
     unique (regatta_id, race_number, sail_number)
 );
 
-
-create or replace function get_points(place bigint, abbreviation varchar(5), total_sailors bigint) returns bigint language plpgsql as $$
+drop table if exists get_points;
+create function get_points(place bigint, abbreviation varchar(5), total_sailors bigint) returns bigint language plpgsql as $$
 begin
     if abbreviation is null then
         return place;
@@ -129,7 +129,8 @@ begin
     end if;
 end; $$;
 
-create or replace function get_abbreviation_for_sailor(target_sailor_id bigint, target_regatta_id bigint, target_race_number bigint) returns varchar(5) language plpgsql as $$
+drop function if exists get_abbreviation_for_sailor;
+create function get_abbreviation_for_sailor(target_sailor_id bigint, target_regatta_id bigint, target_race_number bigint) returns varchar(5) language plpgsql as $$
 declare
     row record;
     abbr varchar(5);
@@ -154,23 +155,14 @@ begin
     return sailor_count;
 end; $$;
 
-create or replace function get_total_sailors(target_regatta_id bigint) returns bigint language plpgsql as $$
-declare
-    sailor_count bigint;
-begin
-    select count(sailor_id) into sailor_count from starting_list where regatta_id = target_regatta_id;
-
-    return sailor_count;
-end; $$;
-
-drop function if exists get_n_of_greatest_points;
+drop function if exists get_n_of_greatest_points cascade;
 create function get_n_of_greatest_points(target_regatta_id bigint, target_sailor_id bigint, target_regatta_exclusions bigint)
 returns table (points bigint, race_number bigint) language plpgsql as $$
 begin
     return query select r.points, r.race_number from pre_results r where r.regatta_id = target_regatta_id and r.sailor_id = target_sailor_id order by r.points desc limit target_regatta_exclusions;
 end; $$;
 
-drop function if exists get_sum_of_greatest_points;
+drop function if exists get_sum_of_greatest_points cascade;
 create function get_sum_of_greatest_points(target_regatta_id bigint, target_sailor_id bigint, target_regatta_exclusions bigint) returns bigint language plpgsql as $$
 declare
     sum_of_greatest bigint;
@@ -206,4 +198,4 @@ create view results as select
     *,
     (min(points) over (partition by sailor_id, regatta_id)) as min_point,
     (sum(points) over (partition by sailor_id, regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, exclusions)) as total_points
-from pre_results order by total_points desc , min_point;
+from pre_results order by total_points desc, min_point;
