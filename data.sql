@@ -49,7 +49,7 @@ insert into regattas (regatta_id, place_id, exclusions, begin_date, end_date, na
 values (1, 1, 1, '2020-11-07', '2020-11-08', 'Finał Super Pucharu Arki');
 
 truncate table sailing_numbers_associated_to_sailors cascade ;
-insert into sailing_numbers_associated_to_sailors (regatta_id, sailor_id, sailing_number)
+insert into sailing_numbers_associated_to_sailors (regatta_id, sailor_id, sail_number)
 values (1, 1, '9425'),
        (1, 2, '9922'),
        (1, 3, '7482'),
