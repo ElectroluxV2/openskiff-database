@@ -206,9 +206,9 @@ create view results2 as select
     sailor_id,
     total_points,
     '[' || string_agg(distinct r.sail_number, ',') || ']' as sailing_numbers,
-    '[' || string_agg(r.race_number::text || ':' || r.place, ',') || ']' as finish_line_places,
-    '[' || string_agg(r.race_number::text || ':' || r.points, ',') || ']' as places,
-    '[' || string_agg(r.race_number::text || ':' || r.abbreviation, ',') || ']' as abbreviations
+    '[' || string_agg(r.race_number::text || ':' || r.place, ',' order by r.race_number) || ']' as finish_line_places,
+    '[' || string_agg(r.race_number::text || ':' || r.points, ',' order by r.race_number) || ']' as places,
+    '[' || string_agg(r.race_number::text || ':' || r.abbreviation, ',' order by r.race_number) || ']' as abbreviations
     from results r
 group by sailor_id, regatta_id, total_points;
 
