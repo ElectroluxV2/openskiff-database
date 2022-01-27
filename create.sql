@@ -200,3 +200,15 @@ create view results as select
     (min(points) over (partition by sailor_id, regatta_id)) as min_point,
     (sum(points) over (partition by sailor_id, regatta_id) - get_sum_of_greatest_points(regatta_id, sailor_id, exclusions)) as total_points
 from pre_results order by total_points desc, min_point;
+
+drop view if exists results2 cascade;
+create view results2 as select
+    sailor_id,
+    total_points,
+    '[' || string_agg(distinct r.sail_number, ',') || ']' as sailing_numbers,
+    '[' || string_agg(r.race_number::text || ':' || r.place, ',') || ']' as finish_line_places,
+    '[' || string_agg(r.race_number::text || ':' || r.points, ',') || ']' as places,
+    '[' || string_agg(r.race_number::text || ':' || r.abbreviation, ',') || ']' as abbreviations
+    from results r
+group by sailor_id, regatta_id, total_points;
+
