@@ -1,7 +1,20 @@
+-- Holds every information about sailor you may ever want to know,
+-- including personal stuff,
+-- but not feature flags – these should be inside some specific tables.
 drop table if exists sailors cascade;
 create table sailors (
+     -- Sailors can't be identified by sail numbers,
+     -- as they tend to be used by multiple owners,
+     -- not to mention sailor can change it freely too.
     sailor_id bigserial,
+
+    -- Using boolean here could be optimal,
+    -- but since char is the same disk space overhead,
+    -- we should really leave char for better readability.
+    -- Furthermore, no need to complicate with custom enum type,
+    -- and hence simple check is sufficient.
     sex char check (sex IN ('F', 'M')) not null,
+
     birth_date date not null,
     given_name varchar(128) not null,
     family_name varchar(128) not null,
@@ -10,9 +23,17 @@ create table sailors (
     unique (sailor_id)
 );
 
+-- Holds every information about club
 drop table if exists clubs cascade;
 create table clubs (
+    -- Clubs could be identified by their short name,
+    -- but since we do not know length of that name
+    -- and it can contain some non ascii characters it is rather bad idea.
     club_id bigserial,
+
+    -- As clubs self  regulates naming,
+    -- they may have an abbreviation of the name that we cannot guess from the full name.
+    -- Furthermore, it is more convenient to use that shorter version in some (unfortunately not every) cases.
     short_name varchar(64) not null,
     full_name varchar(256) not null,
 
@@ -20,28 +41,44 @@ create table clubs (
     unique (club_id)
 );
 
+-- As simple as it possibly can be, regatta needs a place to be located at.
+-- A single place can host multiple (possibly none) regattas.
 drop table if exists places cascade;
 create table places (
+    -- We may not differ places by their name nor location.
+    -- Moreover, name can be used as place for more information.
+    -- E.g., : Warsaw, Slip zone 1 (temporary one) is different (and should be different) from Warsaw, Slip zone 1.
     place_id bigserial,
+
+    -- Geolocation e.g., (54.51793,18.551069). Ideally should point at related slipping zone.
     location point,
     name varchar(512) not null,
 
     primary key (place_id),
-    unique (place_id)
+    unique (place_id),
+    unique (location, name) -- We cannot have duplicated data.
 );
 
 drop table if exists regattas cascade;
 create table regattas (
+    -- As the name is a string, it shall not be primary key.
     regatta_id bigserial,
+
     place_id bigserial references places(place_id) not null,
+
+    -- Count of worst (the highest score) races to exclude from final results.
     exclusions bigint not null,
+
     begin_date date not null,
     end_date date not null,
     name varchar(512) not null,
 
     primary key (regatta_id),
-    unique (regatta_id)
+    unique (regatta_id),
+    unique (name, place_id) -- We cannot have duplicated data.
 );
+--
+create index regattas_year_index on regattas(begin_date desc nulls last);
 
 drop table if exists sailing_numbers_associated_to_sailors cascade;
 create table sailing_numbers_associated_to_sailors (
