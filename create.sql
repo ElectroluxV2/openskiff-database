@@ -37,6 +37,8 @@ create table clubs (
     short_name varchar(64) not null,
     full_name varchar(256) not null,
 
+    website_url text,
+
     primary key (club_id),
     unique (club_id)
 );
@@ -77,7 +79,7 @@ create table regattas (
     unique (regatta_id),
     unique (name, place_id) -- We cannot have duplicated data.
 );
---
+-- Year is commonly used within where closure, e.g., when generating calendars or calculating annually cups.
 create index regattas_year_index on regattas(begin_date desc nulls last);
 
 drop table if exists sailing_numbers_associated_to_sailors cascade;

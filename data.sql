@@ -167,11 +167,18 @@ values (1, 'M', '1000-01-01', 'Tymon', 'Gajdziński'),
 
 truncate table places cascade;
 insert into places (place_id, location, name)
-values (1, '(54.517930, 18.551069)', 'Gdynia, Polska'),
-       (2, '(54.367410, 18.777035)', 'Gorki Zachodnie, Gdańsk, Polska'),
-       (4, '(50.032630, 19.994765)', 'Kraków, Polska'),
-       (5, '(54.274804, 18.097708)', 'Kartuzy, Polska'),
-       (6, '(52.436472, 21.040848)', 'Nieporęt, Polska');
+values (1, '(54.518890, 18.530541)', 'Gdynia'),
+       (2, '(54.367551, 18.777231)', 'Gorki Zachodnie'),
+       (3, '(54.432575, 18.583595)', 'Bitwy pod Płowcami 61, Sopot'),
+       (4, '(50.033026, 19.995386)', 'Kraków'),
+       (5, '(54.722181, 18.416997)', 'Puck'),
+       (6, '(54.274993, 18.097937)', 'Kartuzy'),
+       (7, '(52.437346, 21.044740)', 'Nieporęt'),
+       (8, '(54.274855, 18.098357)', 'Złota Góra, Kartuzy County'),
+       (9, '(54.433612, 18.580523)', 'Sopot'),
+       (10, '(53.677781, 17.408881)', 'Człuchów'),
+       (11, '(54.274830, 18.098207)', 'Złota Góra');
+
 
 truncate table regattas cascade;
 insert into regattas (regatta_id, place_id, exclusions, begin_date, end_date, name)
