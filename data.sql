@@ -168,7 +168,7 @@ values (1, 'M', '1000-01-01', 'Tymon', 'Gajdziński'),
 truncate table places cascade;
 insert into places (place_id, location, name)
 values (1, '(54.518890, 18.530541)', 'Gdynia'),
-       (2, '(54.367551, 18.777231)', 'Gorki Zachodnie'),
+       (2, '(54.367551, 18.777231)', 'Górki Zachodnie'),
        (3, '(54.432575, 18.583595)', 'Bitwy pod Płowcami 61, Sopot'),
        (4, '(50.033026, 19.995386)', 'Kraków'),
        (5, '(54.722181, 18.416997)', 'Puck'),
@@ -177,12 +177,70 @@ values (1, '(54.518890, 18.530541)', 'Gdynia'),
        (8, '(54.274855, 18.098357)', 'Złota Góra, Kartuzy County'),
        (9, '(54.433612, 18.580523)', 'Sopot'),
        (10, '(53.677781, 17.408881)', 'Człuchów'),
-       (11, '(54.274830, 18.098207)', 'Złota Góra');
+       (11, '(54.274830, 18.098207)', 'Złota Góra'),
+       (12, '(54.246007, 12.429300)', 'Ribnitz, Niemcy'),
+       (13, '(53.736622, 17.507783)', 'Charzykowy'),
+       (14, '(54.797911, 18.419392)', 'Władysławowo'),
+       (15, '(45.883000, 10.844583)', 'Arco, Lago di Garda, Włochy');
 
 
 truncate table regattas cascade;
 insert into regattas (regatta_id, place_id, exclusions, begin_date, end_date, name)
-values (1, 1, 1, '2020-11-07', '2020-11-08', 'Finał Super Pucharu Arki');
+values (1, 12, 0, '2017-04-01', '2017-04-02', 'Regaty Bursztynowe'),
+       (2, 13, 0, '2017-05-02', '2017-05-03', 'Regaty Konstytucyjne'),
+       (3, 13, 0, '2017-05-12', '2017-05-14', 'Memoriał Ottona Wielanda'),
+       (4, 14, 0, '2017-06-09', '2017-06-11', 'Puchar Arki'),
+       (5, 1, 0, '2017-06-14', '2017-06-15', 'Wojewódzkie Igrzyska Młodzieży Szkolnej i Gimnazjalnej'),
+       (6, 10, 0, '2017-06-17', '2017-06-18', 'Puchar Burmistrza Człuchowa'),
+       (7, 2, 0, '2017-06-24', '2017-06-26', 'Nord Cup'),
+       (8, 9, 0, '2017-07-01', '2017-07-02', 'Sopocki Puchar Akademii Prestige'),
+       (9, 5, 0, '2017-07-07', '2017-07-09', 'Mistrzostwa Polski Młodzików'),
+       (10, 15, 0, '2017-07-31', '2017-08-05', 'Mistrzostwa Świata'),
+       (11, 10, 0, '2017-09-09', '2017-09-10', 'Puchar Wójta Gminy Człuchów'),
+       (12, 1, 0, '2017-09-16', '2017-09-17', 'Błękitna Gwiazda'),
+       (13, 10, 0, '2017-09-23', '2017-09-24', 'Żeglarski Puchar Gminy Człuchowa'),
+       (14, 10, 0, '2017-09-30', '2017-10-01', 'Jesienny Puchar Gminy Człuchowa'),
+       (15, 10, 0, '2017-10-14', '2017-10-15', 'Jesienny Puchar Vikinga'),
+
+       (1, 5, 1, '2018-06-08', '2018-06-10', 'Regaty Bursztynowe'),
+       (1, 5, 1, '2018-06-08', '2018-06-10', 'Puchar Pucka'),
+       (2, 2, 0, '2018-06-29', '2018-07-08', 'Pantaenius Nord CUP Gdańsk 2018'),
+
+       (3, 4, 1, '2019-06-01', '2019-06-02', 'Otwarte Mistrzostwa Małopolski'),
+       (4, 5, 1, '2019-06-07', '2019-06-09', 'Puchar Pucka'),
+       (5, 1, 1, '2019-06-19', '2019-06-20', 'Międzywojewódzkie mistrzostwa młodzików'),
+       (6, 2, 1, '2019-06-28', '2019-07-07', 'Lotos Nord Cup Gdańsk'),
+       (7, 1, 1, '2019-10-19', '2019-10-20', 'Jesienny Puchar Arki'),
+
+       (8, 1, 1, '2020-05-23', '2020-05-24', 'Konsultacja Szkoleniowa w klasie Open Skiff'),
+       (9, 1, 1, '2020-05-30', '2020-05-31', 'Konsultacje Szkoleniowe o Puchar Jungi OKŻ Olsztyn'),
+       (10, 7, 1, '2020-06-06', '2020-06-07', 'Puchar WOZŻ'),
+       (11, 11, 1, '2020-06-13', '2020-06-14', 'Złota Góra - Otwarcie sezonu'),
+       (12, 1, 1, '2020-06-20', '2020-06-21', 'LXV Puchar Arki'),
+       (13, 2, 0, '2020-06-24', '2020-07-12', 'Lotos Nord Cup Gdańsk'),
+       (14, 5, 0, '2020-07-21', '2020-07-22', 'Puchar Burmistrza Pucka'),
+       (15, 1, 1, '2020-08-01', '2020-08-02', 'Otwarte Mistrzostwa Pomorza Klasy Open Skiff'),
+       (16, 1, 1, '2020-08-20', '2020-08-22', 'Mistrzostwa Polski Młodzików w klasie Open Skiff'),
+       (17, 1, 1, '2020-08-20', '2020-08-22', 'Mistrzostwa Polski Juniorów Młodszych w klasie Open Skiff'),
+       (18, 7, 1, '2020-09-05', '2020-10-18', 'Mistrzostwa Warszawy (Finał WOM i MWJ)'),
+       (19, 10, 1, '2020-09-05', '2020-09-06', 'Regaty o Puchar Wójta Gminy Człuchów'),
+       (20, 1, 1, '2020-09-12', '2020-09-13', 'Puchar OPTI'),
+       (21, 9, 1, '2020-09-19', '2020-09-20', 'Regaty Super O''Pen CUP  w klasa OpenSkiff'),
+       (22, 8, 1, '2020-10-10', '2020-10-10', 'Błękitna Wstęga j. Brodno Wielkie'),
+       (23, 8, 1, '2020-10-11', '2020-10-11', 'Golden Mountain Arka Open Skiff'),
+       (24, 7, 0, '2020-10-17', '2020-10-18', 'Jesienny Puchar Spójni'),
+       (25, 1, 1, '2020-11-07', '2020-11-08', 'Finał Super Pucharu Arki'),
+
+       (26, 6, 1, '2021-04-24', '2021-04-25', 'Regaty Otwarcia Sezonu - Złota Góra 2021'),
+       (27, 5, 1, '2021-05-15', '2021-05-16', 'Puchar burmistrza miasta Puck'),
+       (28, 4, 1, '2021-05-22', '2021-05-23', 'XXVII Regaty Ekologiczne'),
+       (29, 3, 1, '2021-06-05', '2021-06-06', 'OPEN SUPER CUP II Eliminacje do MP w Sprincie'),
+       (30, 1, 1, '2021-06-18', '2021-06-20', 'PUCHAR ARKI U15'),
+       (31, 1, 1, '2021-06-18', '2021-06-20', 'Mistrzostwa Polski Młodzików w klasie Open Skiff'),
+       (32, 2, 1, '2021-06-25', '2021-07-11', 'Lotos Nord Cup Gdańsk'),
+       (33, 1, 1, '2021-08-21', '2021-08-22', 'Mistrzostwa Pomorza w klasie O''pen Skiff 2021'),
+       (34, 1, 1, '2021-10-30', '2021-10-31', 'Finał Super Pucharu Arki W klasie O’pen Skiff U15, U13');
+
 
 truncate table sailing_numbers_associated_to_sailors cascade ;
 insert into sailing_numbers_associated_to_sailors (regatta_id, sailor_id, sail_number)
