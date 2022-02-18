@@ -1,16 +1,19 @@
 truncate table clubs cascade;
-insert into clubs (club_id, short_name, full_name)
-values (1, 'GKŻ', 'Gdański Klub Żeglarski'),
-       (2, 'MKŻ Arka', 'Miejski Klub Żeglarski Arka Gdynia'),
-       (3, 'KŻ HORN', 'Klub Żeglarski HORN Kraków'),
-       (4, 'OKŻ', 'Olsztyński Klub Żeglarski'),
-       (5, 'SKŻ', 'Sopocki Klub Żeglarski Ergo Hestia'),
-       (6, 'UKS Kotwica', 'Uczniowski Klub Sportowy Kotiwca Gdynia'),
-       (7, 'AŻ Prestige', 'Akademia Żeglarska Prestige'),
-       (8, 'OPTI CWM', 'OPTI CWM Gdynia'),
-       (9, 'KS Spójnia', 'Klub Sportowy Spójnia Warszawa'),
-       (10, 'S&S', 'Sail & Ski Klub Warszawa'),
-       (11, 'Junga', 'Fundacja Jacht Klub Junga');
+insert into clubs (club_id, short_name, full_name, website_url)
+values (0, 'OSCA', 'Polskie Stowarzyszenie Klasy O''pen Skiff', 'https://openskiff.pl/'),
+       (1, 'GKŻ', 'Gdański Klub Żeglarski', 'https://gkz.gda.pl/'),
+       (2, 'MKŻ Arka', 'Miejski Klub Żeglarski Arka Gdynia', 'https://mkzarka.pl/'),
+       (3, 'KŻ HORN', 'Klub Żeglarski HORN Kraków', 'https://www.hornkrakow.pl/'),
+       (4, 'OKŻ Junga', 'Fundacja Yacht Klub Junga', 'https://www.okz.olsztyn.pl/'),
+       (5, 'SKŻ', 'Sopocki Klub Żeglarski Ergo Hestia', 'https://skz.sopot.pl/'),
+       (6, 'AŻ Prestige', 'Akademia Żeglarska Prestige', 'https://klubzeglarski.sopot.pl/'),
+       (8, 'OPTI CWM', 'Klub Żeglarski OPTI CWM Gdynia', 'http://www.opticwm.pl/'),
+       (9, 'KS Spójnia', 'Klub Sportowy Spójnia Warszawa', 'https://www.ksspojnia.pl/'),
+       (10, 'S&S', 'Sail & Ski Klub Warszawa', 'https://www.facebook.com/SailSkiKlub/'),
+       (11, 'AZS AWFiS', 'Klub Sportowy AZS AWFIS GDAŃSK', 'https://azsawfis.pl/'),
+       (12, 'Legia', 'Sailing Legia - sekcja żeglarska Legia Warszawa', 'https://sailinglegia.pl/'),
+       (13, 'AKŻ''90', 'Armatorski Klub Żeglarski Nakielno', 'https://www.akz90.pl/'),
+       (14, 'YKP Kraków', 'Yacht Klub Polski Kraków', 'https://ykp.krakow.pl/');
 
 truncate table sailors cascade;
 insert into sailors (sailor_id, sex, birth_date, given_name, family_name)
