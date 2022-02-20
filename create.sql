@@ -253,7 +253,7 @@ create view pre_results as select
     from starting_list sl
     left join sail_numbers_associated_to_sailors snats on sl.regatta_id = snats.regatta_id and sl.sailor_id = snats.sailor_id
     full outer join races r on sl.regatta_id = r.regatta_id
-    left join races_finish_line_list fl on r.regatta_id = fl.regatta_id and r.race_number = fl.race_number and fl.sail_number = snats.sail_number
+    left join finish_list fl on r.regatta_id = fl.regatta_id and r.race_number = fl.race_number and fl.sail_number = snats.sail_number
     left join penalties p on r.regatta_id = p.regatta_id and r.race_number = p.race_number and snats.sail_number = p.sail_number
     left join regattas rg on r.regatta_id = rg.regatta_id
 ) as tmp
