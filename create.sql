@@ -64,10 +64,10 @@ create table places (
     name varchar(512) not null,
 
     primary key (place_id),
-    unique (place_id),
+    unique (place_id)
 
     -- Anti - duplication rules.
-    unique (location, name)
+    -- unique (location, name) -- Too extensive
 );
 
 drop table if exists regattas cascade;
