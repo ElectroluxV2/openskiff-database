@@ -20,7 +20,10 @@ create table sailors (
     family_name varchar(128) not null,
 
     primary key (sailor_id),
-    unique (sailor_id)
+    unique (sailor_id),
+
+    -- Anti - duplication rules.
+    unique (birth_date, given_name, family_name)
 );
 
 -- Holds every information about club
@@ -40,7 +43,11 @@ create table clubs (
     website_url text,
 
     primary key (club_id),
-    unique (club_id)
+    unique (club_id),
+
+    -- Anti - duplication rules.
+    unique (short_name),
+    unique (short_name, full_name)
 );
 
 -- As simple as it possibly can be, regatta needs a place to be located at.
@@ -58,7 +65,9 @@ create table places (
 
     primary key (place_id),
     unique (place_id),
-    unique (location, name) -- We cannot have duplicated data.
+
+    -- Anti - duplication rules.
+    unique (location, name)
 );
 
 drop table if exists regattas cascade;
@@ -71,27 +80,33 @@ create table regattas (
     -- Count of worst (the highest score) races to exclude from final results.
     exclusions bigint not null,
 
+    cup_multiplier real default null,
+
     begin_date date not null,
     end_date date not null,
     name varchar(512) not null,
 
     primary key (regatta_id),
     unique (regatta_id),
-    unique (name, place_id) -- We cannot have duplicated data.
+
+    -- Anti - duplication rules.
+    unique (name, place_id, begin_date)
 );
 -- Year is commonly used within where closure, e.g., when generating calendars or calculating annually cups.
 create index regattas_year_index on regattas(begin_date desc nulls last);
 
-drop table if exists sailing_numbers_associated_to_sailors cascade;
-create table sailing_numbers_associated_to_sailors (
+-- Sailors may use different sail numbers on every regatta, event multiple numbers on same regatta.
+drop table if exists sail_numbers_associated_to_sailors cascade;
+create table sail_numbers_associated_to_sailors (
     sailor_id bigserial references sailors(sailor_id) not null,
     regatta_id bigserial references regattas(regatta_id) not null,
     sail_number varchar(16) not null,
 
     primary key (sailor_id, regatta_id, sail_number),
-    unique (regatta_id, sail_number)
+    unique (sailor_id, regatta_id, sail_number)
 );
 
+-- Sailors may belong to a different club during a single regatta, but they cannot change that during a regatta.
 drop table if exists starting_list cascade;
 create table starting_list (
     regatta_id bigserial references regattas(regatta_id) not null,
@@ -99,6 +114,9 @@ create table starting_list (
     club_id bigserial references clubs(club_id) not null,
 
     primary key (regatta_id, sailor_id),
+    unique (regatta_id, sailor_id),
+
+    -- Anti - duplication rules.
     unique (regatta_id, sailor_id, club_id)
 );
 
@@ -108,7 +126,10 @@ create table year_categories (
     younger_than bigint not null,
 
     primary key (category),
-    unique (category)
+    unique (category),
+
+    -- Anti - duplication rules.
+    unique (category, younger_than)
 );
 
 drop table if exists results_abbreviations cascade;
@@ -117,7 +138,10 @@ create table results_abbreviations (
     full_name varchar(255) not null,
 
     primary key (short_name),
-    unique(short_name)
+    unique(short_name),
+
+    -- Anti - duplication rules.
+    unique (short_name, full_name)
 );
 
 drop table if exists races cascade;
@@ -134,8 +158,8 @@ create table races (
   unique (regatta_id, race_number, sail_number) -> there may not be multiple different places within same regatta for single race for same sail number
   unique (regatta_id, race_number, place) -> once there is place (eg. 1) for race within regatta, other sail number may not have same place in same race within same regatta
  */
-drop table if exists races_finish_line_list cascade;
-create table races_finish_line_list (
+drop table if exists finish_list cascade;
+create table finish_list (
     regatta_id bigserial not null,
     race_number bigint not null,
     sail_number varchar(16) not null,
@@ -144,6 +168,8 @@ create table races_finish_line_list (
     foreign key (regatta_id, race_number) references races(regatta_id, race_number),
     primary key (regatta_id, race_number, sail_number),
     unique (regatta_id, race_number, sail_number),
+
+    -- Anti - duplication rules.
     unique (regatta_id, race_number, place)
 );
 
@@ -175,7 +201,7 @@ declare
     row record;
     abbr varchar(5);
 begin
-    for row in select sail_number from sailing_numbers_associated_to_sailors where sailor_id = target_sailor_id
+    for row in select sail_number from sail_numbers_associated_to_sailors where sailor_id = target_sailor_id
     loop
         select abbreviation into abbr from penalties where sail_number = row.sail_number and regatta_id = target_regatta_id and race_number = target_race_number;
         if abbr is not null then
@@ -225,7 +251,7 @@ create view pre_results as select
         p.abbreviation,
         get_points(fl.place, p.abbreviation, get_total_sailors(sl.regatta_id)) as step_one_points
     from starting_list sl
-    left join sailing_numbers_associated_to_sailors snats on sl.regatta_id = snats.regatta_id and sl.sailor_id = snats.sailor_id
+    left join sail_numbers_associated_to_sailors snats on sl.regatta_id = snats.regatta_id and sl.sailor_id = snats.sailor_id
     full outer join races r on sl.regatta_id = r.regatta_id
     left join races_finish_line_list fl on r.regatta_id = fl.regatta_id and r.race_number = fl.race_number and fl.sail_number = snats.sail_number
     left join penalties p on r.regatta_id = p.regatta_id and r.race_number = p.race_number and snats.sail_number = p.sail_number
